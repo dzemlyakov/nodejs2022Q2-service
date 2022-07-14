@@ -30,7 +30,6 @@ export class TracksService {
   update(id: string, updateTrackDto: UpdateTrackDto): Track {
     const itemToUpd = this.findOne(id);
     if (!itemToUpd) throw new NotFoundException();
-
     Object.assign(itemToUpd, { ...updateTrackDto });
 
     return itemToUpd || null;
@@ -39,7 +38,6 @@ export class TracksService {
   remove(id: string) {
     const itemToDel = this.findOne(id);
     if (!itemToDel) throw new NotFoundException();
-
     this.db.tracks = this.db.tracks.filter((item) => item.id !== id);
 
     return itemToDel || null;

@@ -48,6 +48,10 @@ export class ArtistsService {
       if (album.artistId === id) album.artistId = null;
     });
 
+    this.db.favorites.artists = this.db.favorites.artists.filter(
+      (item) => item.id !== id,
+    );
+
     this.db.artists = this.db.artists.filter((item) => item.id !== id);
 
     return itemToDel || null;

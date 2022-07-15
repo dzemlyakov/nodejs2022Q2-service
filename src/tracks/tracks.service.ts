@@ -38,6 +38,10 @@ export class TracksService {
   remove(id: string) {
     const itemToDel = this.findOne(id);
     if (!itemToDel) throw new NotFoundException();
+
+    this.db.favorites.tracks = this.db.favorites.tracks.filter(
+      (item) => item.id !== id,
+    );
     this.db.tracks = this.db.tracks.filter((item) => item.id !== id);
 
     return itemToDel || null;

@@ -43,6 +43,7 @@ export class AlbumsService {
     });
 
     this.db.albums = this.db.albums.filter((item) => item.id !== id);
+    this.db.favorites.albums = this.db.albums.filter((item) => item.id !== id);
 
     return itemToDel || null;
   }

@@ -34,8 +34,6 @@ export class FavoritesService {
   }
 
   findAll() {
-    console.log("find", this.db.favorites.artists);
-    
     return this.db.favorites;
   }
 
@@ -46,6 +44,8 @@ export class FavoritesService {
     this.db.favorites.tracks = this.db.favorites.tracks.filter(
       (item) => item.id !== id,
     );
+
+    return;
   }
 
   removeArtist(id: string) {
@@ -57,7 +57,7 @@ export class FavoritesService {
     this.db.favorites.artists = this.db.favorites.artists.filter(
       (item) => item.id !== id,
     );
-    console.log("after", this.db.favorites.artists);
+
     return;
   }
 
@@ -68,5 +68,7 @@ export class FavoritesService {
     this.db.favorites.albums = this.db.favorites.albums.filter(
       (item) => item.id !== id,
     );
+
+    return;
   }
 }

@@ -37,6 +37,11 @@ export class AlbumsService {
   remove(id: string) {
     const itemToDel = this.findOne(id);
     if (!itemToDel) throw new NotFoundException();
+
+    this.db.tracks.forEach((track) => {
+      if (track.albumId === id) track.albumId = null;
+    });
+
     this.db.albums = this.db.albums.filter((item) => item.id !== id);
 
     return itemToDel || null;

@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import InMemoryDB from 'src/DB/dataBase';
+import { InMemoryDB } from 'src/DB/dataBase';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
@@ -7,7 +7,7 @@ import { Track } from './entities/track.entity';
 
 @Injectable()
 export class TracksService {
-  constructor(private db: InMemoryDB) {}
+  constructor(public db: InMemoryDB) {}
 
   create(createTrackDto: CreateTrackDto): Track {
     const newTrack = { ...createTrackDto, id: uuidv4() };
@@ -24,7 +24,7 @@ export class TracksService {
     const track = this.db.tracks.find((item) => item.id === id);
     if (!track) throw new NotFoundException();
 
-    return track;
+    return track || null;
   }
 
   update(id: string, updateTrackDto: UpdateTrackDto): Track {

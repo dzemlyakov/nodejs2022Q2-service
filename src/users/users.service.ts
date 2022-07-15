@@ -3,7 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import InMemoryDB from 'src/DB/dataBase';
+import { InMemoryDB } from 'src/DB/dataBase';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -46,12 +46,7 @@ export class UsersService {
     if (oldPassword !== itemToUpd.password) {
       throw new ForbiddenException('wrong old password');
     }
-    // const updatedUser = {
-    //   ...itemToUpd,
-    //   version: itemToUpd.version + 1,
-    //   updateAt: Date.now(),
-    //   password: newPassword
-    // }
+
     Object.assign(itemToUpd, {
       version: itemToUpd.version + 1,
       updatedAt: Date.now(),

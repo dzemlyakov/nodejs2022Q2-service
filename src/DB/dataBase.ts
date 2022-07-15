@@ -10,6 +10,11 @@ export class InMemoryDB {
   tracks: Track[] = [];
   artists: Artist[] = [];
   users: User[] = [];
+  private static instance;
+  constructor() {
+    if (!InMemoryDB.instance) {
+      InMemoryDB.instance = this;
+    }
+    return InMemoryDB.instance;
+  }
 }
-
-export default InMemoryDB;

@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
 import { ArtistsService } from './artists.service';
 import { ArtistsController } from './artists.controller';
-import InMemoryDB from 'src/DB/dataBase';
+import { dataBaseModule } from 'src/DB/dataBase.module';
 
 @Module({
+  imports: [dataBaseModule],
   controllers: [ArtistsController],
-  providers: [ArtistsService, InMemoryDB],
+  providers: [ArtistsService],
 })
 export class ArtistsModule {}

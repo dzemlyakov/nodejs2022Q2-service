@@ -1,7 +1,7 @@
-FROM node:16-alpine3.14
+FROM --platform=linux/amd64 node:16.15-alpine
 WORKDIR /usr/app
 COPY package*json .
 RUN npm install
 COPY . . 
 EXPOSE 4000
-CMD ["npm", "run", "start:dev"]
+CMD ["npm", "run", "start"]

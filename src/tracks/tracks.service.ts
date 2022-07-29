@@ -1,49 +1,46 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InMemoryDB } from 'src/DB/dataBase';
-import { v4 as uuidv4 } from 'uuid';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { Track } from './entities/track.entity';
 
 @Injectable()
 export class TracksService {
-  constructor(public db: InMemoryDB) {}
+  constructor(
+    @InjectRepository(Track)
+    private readonly trackRepository: Repository<Track>,
+  ) {}
 
-  create(createTrackDto: CreateTrackDto): Track {
-    const newTrack = { ...createTrackDto, id: uuidv4() };
-    this.db.tracks.push(newTrack);
+  async create(createTrackDto: CreateTrackDto): Promise<Track> {
+    const newTrack = await this.trackRepository.create({ ...createTrackDto });
 
-    return newTrack;
+    return await this.trackRepository.save(newTrack);
   }
 
-  findAll(): Track[] {
-    return this.db.tracks;
+  async findAll(): Promise<Track[]> {
+    return this.trackRepository.find();
   }
 
-  findOne(id: string): Track {
-    const track = this.db.tracks.find((item) => item.id === id);
+  async findOne(id: string): Promise<Track> {
+    const track = await this.trackRepository.findOne({ where: { id } });
     if (!track) throw new NotFoundException();
 
-    return track || null;
+    return track;
   }
 
-  update(id: string, updateTrackDto: UpdateTrackDto): Track {
-    const itemToUpd = this.findOne(id);
-    if (!itemToUpd) throw new NotFoundException();
-    Object.assign(itemToUpd, { ...updateTrackDto });
+  async update(id: string, updateTrackDto: UpdateTrackDto): Promise<Track> {
+    const itemToUpd = await this.findOne(id);
+    const updatedTrack = Object.assign(itemToUpd, { ...updateTrackDto });
 
-    return itemToUpd || null;
+    return await this.trackRepository.save(updatedTrack);
   }
 
-  remove(id: string) {
-    const itemToDel = this.findOne(id);
-    if (!itemToDel) throw new NotFoundException();
+  async remove(id: string) {
+    const itemToDel = await this.trackRepository.delete(id);
+    if (!itemToDel.affected) throw new NotFoundException();
 
-    this.db.favorites.tracks = this.db.favorites.tracks.filter(
-      (item) => item.id !== id,
-    );
-    this.db.tracks = this.db.tracks.filter((item) => item.id !== id);
-
-    return itemToDel || null;
+    return { deleted: true };
   }
 }

@@ -1,7 +1,9 @@
+import { DataSource } from 'typeorm';
+
 import { Album } from 'src/albums/entities/album.entity';
 import { Artist } from 'src/artists/entities/artist.entity';
+import { Track } from 'src/tracks/entities/track.entity';
 import { User } from 'src/users/entities/user.entity';
-import { DataSource } from 'typeorm';
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
@@ -10,7 +12,7 @@ export const AppDataSource = new DataSource({
   username: process.env.POSTGRES_USER || 'admin',
   password: process.env.POSTGRES_PASSWORD || '12345',
   database: process.env.POSTGRES_DB || 'db',
-  entities: [User, Artist, Album],
+  entities: [User, Artist, Album, Track],
   logging: true,
   synchronize: true,
   migrationsRun: false,

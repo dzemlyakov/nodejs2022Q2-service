@@ -1,50 +1,48 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { v4 as uuidv4 } from 'uuid';
-import { InMemoryDB } from 'src/DB/dataBase';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { Album } from './entities/album.entity';
 
 @Injectable()
 export class AlbumsService {
-  constructor(private db: InMemoryDB) {}
+  constructor(
+    @InjectRepository(Album)
+    private readonly albumRepository: Repository<Album>,
+  ) {}
 
-  create(createAlbumDto: CreateAlbumDto): Album {
-    const newAlbum = { ...createAlbumDto, id: uuidv4() };
-    this.db.albums.push(newAlbum);
-    return newAlbum;
+  async create(createAlbumDto: CreateAlbumDto): Promise<Album> {
+    const newAlbum = this.albumRepository.create({ ...createAlbumDto });
+
+    return await this.albumRepository.save(newAlbum);
   }
 
-  findAll(): Album[] {
-    return this.db.albums;
+  async findAll(): Promise<Album[]> {
+    return this.albumRepository.find();
   }
 
-  findOne(id: string): Album {
-    const album = this.db.albums.find((item) => item.id === id);
+  async findOne(id: string): Promise<Album> {
+    const album = await this.albumRepository.findOne({ where: { id } });
     if (!album) throw new NotFoundException();
 
     return album;
   }
 
-  update(id: string, updateAlbumDto: UpdateAlbumDto): Album {
-    const itemToUpd = this.findOne(id);
+  async update(id: string, updateAlbumDto: UpdateAlbumDto): Promise<Album> {
+    const itemToUpd = await this.findOne(id);
     if (!itemToUpd) throw new NotFoundException();
-    Object.assign(itemToUpd, { ...updateAlbumDto });
 
-    return itemToUpd || null;
+    const updatedAlbum = Object.assign(itemToUpd, { ...updateAlbumDto });
+
+    return await this.albumRepository.save(updatedAlbum);
   }
 
-  remove(id: string) {
-    const itemToDel = this.findOne(id);
-    if (!itemToDel) throw new NotFoundException();
+  async remove(id: string) {
+    const itemToDel = await this.albumRepository.delete(id);
+    if (!itemToDel.affected) throw new NotFoundException();
 
-    this.db.tracks.forEach((track) => {
-      if (track.albumId === id) track.albumId = null;
-    });
-
-    this.db.albums = this.db.albums.filter((item) => item.id !== id);
-    this.db.favorites.albums = this.db.albums.filter((item) => item.id !== id);
-
-    return itemToDel || null;
+    return { deleted: true };
   }
 }

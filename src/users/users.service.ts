@@ -35,8 +35,6 @@ export class UsersService {
 
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
     const itemToUpd = await this.findOne(id);
-    if (!itemToUpd) throw new NotFoundException();
-
     const { oldPassword, newPassword } = updateUserDto;
     if (oldPassword !== itemToUpd.password) {
       throw new ForbiddenException('wrong old password');

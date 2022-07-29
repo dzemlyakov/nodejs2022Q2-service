@@ -32,7 +32,6 @@ export class ArtistsService {
 
   async update(id: string, updateArtistDto: UpdateArtistDto): Promise<Artist> {
     const itemToUpd = await this.findOne(id);
-    if (!itemToUpd) throw new NotFoundException();
 
     const updatedArtist = Object.assign(itemToUpd, { ...updateArtistDto });
 

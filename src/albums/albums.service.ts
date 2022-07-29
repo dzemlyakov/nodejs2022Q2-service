@@ -32,8 +32,6 @@ export class AlbumsService {
 
   async update(id: string, updateAlbumDto: UpdateAlbumDto): Promise<Album> {
     const itemToUpd = await this.findOne(id);
-    if (!itemToUpd) throw new NotFoundException();
-
     const updatedAlbum = Object.assign(itemToUpd, { ...updateAlbumDto });
 
     return await this.albumRepository.save(updatedAlbum);

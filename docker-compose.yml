@@ -1,23 +1,23 @@
 version: '3.9'
 services:
-  api:
-    container_name: rest_service
-    build:
-      dockerfile: Dockerfile
-      context: .
-    restart: unless-stopped
-    networks:
-      - network
-    command: npm run start:dev
-    volumes:
-      - app:/usr/app
-      - /usr/app/node_modules
-    env_file:
-      - .env
-    ports:
-      - ${PORT}:${PORT}
-    depends_on:
-      - db
+  # api:
+  #   container_name: rest_service
+  #   build:
+  #     dockerfile: Dockerfile
+  #     context: .
+  #   restart: unless-stopped
+  #   networks:
+  #     - network
+  #   command: npm run start:dev
+  #   volumes:
+  #     - app:/usr/app
+  #     - /usr/app/node_modules
+  #   env_file:
+  #     - .env
+  #   ports:
+  #     - ${PORT}:${PORT}
+  #   depends_on:
+  #     - db
   db:
     container_name: rest_service_db
     build: 
@@ -42,4 +42,4 @@ networks:
     driver: bridge
 volumes:
   pgdata:
-  app:    
+  # app:    

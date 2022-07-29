@@ -3,64 +3,53 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { InMemoryDB } from 'src/DB/dataBase';
-import { v4 as uuidv4 } from 'uuid';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 
 @Injectable()
 export class UsersService {
-  constructor(private db: InMemoryDB) {}
+  constructor(
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+  ) {}
 
-  create(createUserDto: CreateUserDto) {
-    const newUser = new User({
-      id: uuidv4(),
-      login: createUserDto.login,
-      password: createUserDto.password,
-      version: 1,
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-    });
-    this.db.users.push(newUser);
-
-    return newUser;
+  async create(createUserDto: CreateUserDto): Promise<User> {
+    const newUser = this.userRepository.create({ ...createUserDto });
+    return await this.userRepository.save(newUser);
   }
 
-  findAll() {
-    return this.db.users;
+  async findAll(): Promise<User[]> {
+    return await this.userRepository.find();
   }
 
-  findOne(id: string) {
-    const user = this.db.users.find((item) => item.id === id);
+  async findOne(id: string): Promise<User> {
+    const user = await this.userRepository.findOne({ where: { id } });
     if (!user) throw new NotFoundException();
 
     return user;
   }
 
-  update(id: string, updateUserDto: UpdateUserDto) {
-    const itemToUpd = this.findOne(id);
+  async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
+    const itemToUpd = await this.findOne(id);
     if (!itemToUpd) throw new NotFoundException();
 
     const { oldPassword, newPassword } = updateUserDto;
     if (oldPassword !== itemToUpd.password) {
       throw new ForbiddenException('wrong old password');
     }
+    itemToUpd.password = newPassword;
 
-    Object.assign(itemToUpd, {
-      version: itemToUpd.version + 1,
-      updatedAt: Date.now(),
-      password: newPassword,
-    });
-
-    return itemToUpd || null;
+    return await this.userRepository.save(itemToUpd);
   }
 
-  remove(id: string) {
-    const itemToDel = this.findOne(id);
-    if (!itemToDel) throw new NotFoundException();
-    this.db.users = this.db.users.filter((item) => item.id !== id);
+  async remove(id: string) {
+    const itemToDel = await this.userRepository.delete(id);
+    if (!itemToDel.affected) throw new NotFoundException();
 
-    return itemToDel || null;
+    return { deleted: true };
   }
 }

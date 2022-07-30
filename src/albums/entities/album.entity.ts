@@ -8,6 +8,7 @@ import {
 
 import { Artist } from 'src/artists/entities/artist.entity';
 import { Track } from 'src/tracks/entities/track.entity';
+import { Favorite } from 'src/favorites/entities/favorite.entity';
 
 @Entity('Album')
 export class Album {
@@ -28,4 +29,9 @@ export class Album {
 
   @OneToMany(() => Track, (track) => track.albumId)
   tracks: Track[];
+
+  @ManyToOne(() => Favorite, (favorite) => favorite.albums, {
+    onDelete: 'SET NULL',
+  })
+  favorites: Favorite;
 }

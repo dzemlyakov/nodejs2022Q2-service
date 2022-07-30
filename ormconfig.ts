@@ -4,6 +4,7 @@ import { Album } from 'src/albums/entities/album.entity';
 import { Artist } from 'src/artists/entities/artist.entity';
 import { Track } from 'src/tracks/entities/track.entity';
 import { User } from 'src/users/entities/user.entity';
+import { Favorite } from 'src/favorites/entities/favorite.entity';
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
@@ -12,7 +13,7 @@ export const AppDataSource = new DataSource({
   username: process.env.POSTGRES_USER || 'admin',
   password: process.env.POSTGRES_PASSWORD || '12345',
   database: process.env.POSTGRES_DB || 'db',
-  entities: [User, Artist, Album, Track],
+  entities: [User, Artist, Album, Track, Favorite],
   logging: true,
   synchronize: true,
   migrationsRun: false,

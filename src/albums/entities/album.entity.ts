@@ -10,7 +10,7 @@ import { Artist } from 'src/artists/entities/artist.entity';
 import { Track } from 'src/tracks/entities/track.entity';
 import { Favorite } from 'src/favorites/entities/favorite.entity';
 
-@Entity('Album')
+@Entity('album')
 export class Album {
   @PrimaryGeneratedColumn('uuid')
   id: string;

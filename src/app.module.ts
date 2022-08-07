@@ -9,6 +9,7 @@ import { TracksModule } from './tracks/tracks.module';
 import { ArtistsModule } from './artists/artists.module';
 import { UsersModule } from './users/users.module';
 import { FavoritesModule } from './favorites/favorites.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { FavoritesModule } from './favorites/favorites.module';
     ArtistsModule,
     UsersModule,
     FavoritesModule,
+    AuthModule,
   ],
 })
 export class AppModule {}

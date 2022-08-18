@@ -1,0 +1,45 @@
+version: '3.9'
+services:
+  api:
+    container_name: rest_service
+    build:
+      dockerfile: Dockerfile
+      context: .
+    restart: unless-stopped
+    networks:
+      - myNetwork
+    command: npm run start:dev
+    volumes:
+      - app:/usr/app
+      - /usr/app/node_modules
+    env_file:
+      - .env
+    ports:
+      - ${PORT}:${PORT}
+    depends_on:
+      - db
+  db:
+    container_name: rest_service_db
+    build: 
+      dockerfile: ./postgress/Dockerfile
+      context: .
+    env_file:
+      - .env
+    restart: unless-stopped
+    ports:
+      - ${PORT_DB}:${PORT_DB}
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes: 
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - myNetwork
+
+networks:
+  myNetwork:
+    driver: bridge
+volumes:
+  pgdata:
+  app:    

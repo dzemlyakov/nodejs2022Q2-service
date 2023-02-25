@@ -3,7 +3,9 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
+import { compare, hash } from 'bcrypt';
 import { Repository } from 'typeorm';
 
 import { CreateUserDto } from './dto/create-user.dto';
@@ -15,10 +17,13 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private configService: ConfigService,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
+    createUserDto.password = await this.hashPassword(createUserDto.password);
     const newUser = this.userRepository.create({ ...createUserDto });
+
     return await this.userRepository.save(newUser);
   }
 
@@ -36,10 +41,11 @@ export class UsersService {
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
     const itemToUpd = await this.findOne(id);
     const { oldPassword, newPassword } = updateUserDto;
-    if (oldPassword !== itemToUpd.password) {
+    const isMatch = await compare(oldPassword, itemToUpd.password);
+    if (!isMatch) {
       throw new ForbiddenException('wrong old password');
     }
-    itemToUpd.password = newPassword;
+    itemToUpd.password = await this.hashPassword(newPassword);
 
     return await this.userRepository.save(itemToUpd);
   }
@@ -49,5 +55,9 @@ export class UsersService {
     if (!itemToDel.affected) throw new NotFoundException();
 
     return { deleted: true };
+  }
+
+  private hashPassword(password: string) {
+    return hash(password, +this.configService.get('CRYPT_SALT'));
   }
 }
